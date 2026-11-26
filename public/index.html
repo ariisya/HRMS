@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HRMS</title>
+<style>
+:root{--navy:#0b1f3a;--navy2:#1b2a5e;--gold:#f5b324;--bg:#eef1f8;--ink:#1c2733;--mut:#6b7785;
+  --pink:#ec4899;--purple:#8b5cf6;--blue:#38b6ff;--green:#10b981;--red:#ff5e62}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button{font-family:inherit}
+.hide{display:none!important}
+
+/* ---------- login ---------- */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+  background:linear-gradient(-45deg,#0b1f3a,#3a1c71,#0f6b8c,#0b1f3a);background-size:400% 400%;animation:bgmove 14s ease infinite}
+@keyframes bgmove{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+.blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.35;animation:float 9s ease-in-out infinite}
+.b1{width:260px;height:260px;background:var(--pink);top:-60px;left:-60px}
+.b2{width:200px;height:200px;background:var(--gold);bottom:-40px;right:8%;animation-delay:-3s}
+.b3{width:150px;height:150px;background:var(--blue);top:20%;right:-30px;animation-delay:-6s}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.08)}}
+.lcard{position:relative;background:rgba(255,255,255,.95);padding:38px 34px;border-radius:20px;width:360px;max-width:92vw;
+  box-shadow:0 25px 60px rgba(0,0,0,.4);animation:pop .6s cubic-bezier(.2,1.2,.3,1)}
+.lcard::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;border-radius:20px 20px 0 0;
+  background:linear-gradient(90deg,var(--pink),var(--gold),var(--blue),var(--green))}
+.logo{font-size:46px;text-align:center;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.lcard h1{margin:6px 0 2px;color:var(--navy);font-size:24px;text-align:center}
+.lcard p{margin:0 0 14px;color:var(--mut);font-size:14px;text-align:center}
+@keyframes pop{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:none}}
+
+/* ---------- forms and buttons ---------- */
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px}
+input,select,textarea{width:100%;padding:10px 12px;border:2px solid #dfe5ee;border-radius:10px;font-size:14px;font-family:inherit;background:#fff;transition:.2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 4px rgba(139,92,246,.15)}
+.btn{background:linear-gradient(135deg,#f5b324,#ff8a3d);color:#2a1a00;border:0;padding:10px 18px;border-radius:10px;font-weight:700;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;box-shadow:0 4px 12px rgba(245,179,36,.35)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(245,179,36,.45)}
+.btn:active{transform:translateY(0) scale(.97)}
+.btn.sec{background:#e6ebf2;color:var(--navy);box-shadow:none}
+.btn.red{background:linear-gradient(135deg,#ff5e62,#ff9966);color:#fff;box-shadow:0 4px 12px rgba(255,94,98,.35)}
+.btn.green{background:linear-gradient(135deg,#10b981,#38d9a9);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.35)}
+.btn.purple{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;box-shadow:0 4px 12px rgba(139,92,246,.35)}
+.btn.sm{padding:5px 11px;font-size:12px}
+.btn.full{width:100%;margin-top:18px;padding:12px}
+.err{color:#c0392b;font-size:13px;margin-top:10px;min-height:16px}
+.linkbtn{display:inline-block;margin-top:12px;color:var(--purple);font-weight:700;text-decoration:none}
+.linkbtn:hover{text-decoration:underline}
+
+/* ---------- layout ---------- */
+#app{display:flex;min-height:100vh}
+aside{width:240px;background:linear-gradient(180deg,#0b1f3a 0%,#1b2a5e 60%,#3a1c71 100%);color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{padding:22px 20px;font-weight:800;font-size:20px;display:flex;align-items:center;gap:10px}
+.brand i{font-style:normal;font-size:26px;animation:pulse 3s ease-in-out infinite}
+.brand span{background:linear-gradient(90deg,#f5b324,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{flex:1;padding:8px 12px}
+nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:#cdd7ea;cursor:pointer;margin-bottom:6px;transition:.2s}
+nav a .ic{font-size:18px;transition:.2s}
+nav a:hover{background:rgba(255,255,255,.1);transform:translateX(5px)}
+nav a:hover .ic{transform:scale(1.25) rotate(-8deg)}
+nav a.on{background:linear-gradient(135deg,#f5b324,#ff8a3d);color:#2a1a00;font-weight:700;box-shadow:0 6px 16px rgba(245,179,36,.35)}
+.who{padding:16px 18px;border-top:1px solid rgba(255,255,255,.12);font-size:13px}
+.who small{color:#a9b8d4;display:block}
+main{flex:1;padding:28px;min-width:0}
+.page{animation:pageIn .45s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:10px;flex-wrap:wrap}
+h2{margin:0;color:var(--navy);font-size:26px}
+.hello{color:var(--mut);margin:4px 0 0}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(11,31,58,.07);margin-bottom:18px;overflow-x:auto;transition:.2s}
+.card h3{margin:0 0 12px;color:var(--navy)}
+.two{display:grid;grid-template-columns:1fr 1.4fr;gap:18px}
+
+/* ---------- KPI cards ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
+.kpi{color:#fff;border-radius:16px;padding:18px;position:relative;overflow:hidden;animation:pageIn .5s ease both;transition:.25s;cursor:default}
+.kpi:hover{transform:translateY(-6px) rotate(-1deg);box-shadow:0 14px 28px rgba(0,0,0,.2)}
+.kpi::after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.18);right:-30px;top:-30px}
+.kpi .ico{font-size:26px}
+.kpi b{display:block;font-size:34px;margin-top:6px}
+.kpi span{font-size:13px;opacity:.92}
+.g1{background:linear-gradient(135deg,#6a5cff,#38b6ff)}.g2{background:linear-gradient(135deg,#10b981,#5eead4)}
+.g3{background:linear-gradient(135deg,#ff5e62,#ff9966)}.g4{background:linear-gradient(135deg,#f6b93b,#fbd46d);color:#3a2a00}
+.g5{background:linear-gradient(135deg,#a855f7,#ec4899)}.g6{background:linear-gradient(135deg,#0ea5e9,#2dd4bf)}
+
+/* ---------- charts ---------- */
+.donutwrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center}
+.donut circle{transition:stroke-dasharray 1.2s ease}
+.legend div{margin:6px 0;font-size:14px}.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.brow{margin:10px 0}.brow .bl{display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px}
+.track{background:#edf0f6;border-radius:20px;height:12px;overflow:hidden}
+.fill{height:100%;width:0;border-radius:20px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--mut);font-size:12px;text-transform:uppercase;padding:8px;border-bottom:2px solid #e6ebf2}
+td{padding:10px 8px;border-bottom:1px solid #eef1f6}
+tbody tr{animation:rowIn .4s ease both;animation-delay:calc(var(--i,0)*25ms)}
+@keyframes rowIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+tbody tr.click{cursor:pointer;transition:.15s}
+tbody tr.click:hover{background:linear-gradient(90deg,#fff6df,#fdeaf4);transform:scale(1.005)}
+.av{width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex:none}
+.who2{display:flex;align-items:center;gap:10px}
+.bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.bar input{flex:2;min-width:180px}.bar select{flex:1;min-width:140px}
+.tag{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block}
+.AKTIF,.OK{background:#d9f7e8;color:#0d7a4f}.BERHENTI,.RALAT{background:#ffe0e0;color:#b3261e}
+.GANTUNG,.DUPLIKAT{background:#fff0c9;color:#8a6200}.TAMAT{background:#e6ebf2;color:#46566b}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+
+/* ---------- modal ---------- */
+#modal{position:fixed;inset:0;background:rgba(11,31,58,.6);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
+.mbox{background:#fff;border-radius:18px;padding:24px;width:780px;max-width:100%;max-height:92vh;overflow:auto;animation:pop .3s cubic-bezier(.2,1.2,.3,1)}
+.mbox.small{width:440px}
+.mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px}
+.banner{border-radius:14px;padding:18px;color:#fff;display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.banner .av{width:56px;height:56px;font-size:20px;background:rgba(255,255,255,.25)}
+.banner h3{margin:0}.banner .tag{margin-top:4px}
+#toast{position:fixed;bottom:22px;right:22px;background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;border-left:5px solid var(--gold);z-index:99;animation:slide .35s ease}
+@keyframes slide{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+.sub{color:var(--mut);font-size:12px}
+
+/* ---------- import wizard ---------- */
+.steps{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.step{padding:7px 14px;border-radius:20px;background:#e6ebf2;color:var(--mut);font-size:13px;font-weight:700;transition:.3s}
+.step.on{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;transform:scale(1.06)}
+.step.done{background:#d9f7e8;color:#0d7a4f}
+.drop{border:3px dashed #c5b8f5;border-radius:16px;padding:34px;text-align:center;cursor:pointer;transition:.2s;margin-top:12px;background:#faf8ff}
+.drop:hover,.drop.over{background:#f1ebff;border-color:var(--purple);transform:scale(1.01)}
+.dropicon{font-size:42px;animation:pulse 2.4s ease-in-out infinite}
+.sumrow{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.sum{flex:1;min-width:120px;border-radius:12px;padding:12px;text-align:center;font-weight:700}
+.sum b{display:block;font-size:26px}
+.exgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.excard{border-radius:14px;padding:16px;color:#fff}
+.excard p{margin:4px 0 12px;font-size:13px;opacity:.92}
+
+#mobtop{display:none;background:var(--navy);padding:10px;gap:6px;flex-wrap:wrap}
+#mobtop a{color:#fff;padding:6px 10px;background:rgba(255,255,255,.14);border-radius:8px;cursor:pointer;font-size:13px}
+@media(max-width:860px){aside{display:none}.grid,.two{grid-template-columns:1fr}#mobtop{display:flex!important}main{padding:14px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="lcard">
+    <div class="logo"></div>
+    <h1>HR Management</h1>
+    <p>Sila log masuk untuk meneruskan</p>
+    <label>Nama Pengguna</label><input id="lu" autocomplete="username">
+    <label>Kata Laluan</label><input id="lp" type="password" autocomplete="current-password">
+    <div class="err" id="lerr"></div>
+    <button class="btn full" onclick="doLogin()">Log Masuk</button>
+  </div>
+</div>
+
+<div id="app" class="hide">
+  <aside>
+    <div class="brand"><i></i><span>HRMS</span></div>
+    <nav id="nav"></nav>
+    <div class="who"><b id="wname"></b><small id="wrole"></small>
+      <button class="btn sec sm" style="margin-top:8px" onclick="doLogout()">Log Keluar</button></div>
+  </aside>
+  <div style="flex:1;min-width:0">
+    <div id="mobtop"></div>
+    <main id="main"></main>
+  </div>
+</div>
+
+<div id="modal" class="hide"></div>
+<div id="toast" class="hide"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let me = null;
+
+async function api(url, method = 'GET', body) {
+  const r = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401 && url !== '/api/login') { showLogin(); throw new Error(d.error || 'Sesi tamat'); }
+  if (!r.ok) throw new Error(d.error || 'Ralat');
+  return d;
+}
+function toast(msg) {
+  const t = $('#toast'); t.classList.add('hide'); void t.offsetWidth;
+  t.textContent = msg; t.classList.remove('hide');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.add('hide'), 3200);
+}
+const tag = s => `<span class="tag ${esc(s)}">${esc(s)}</span>`;
+
+// ---------- fun helpers ----------
+const GRADS = ['linear-gradient(135deg,#6a5cff,#38b6ff)','linear-gradient(135deg,#10b981,#5eead4)','linear-gradient(135deg,#ff5e62,#ff9966)',
+  'linear-gradient(135deg,#a855f7,#ec4899)','linear-gradient(135deg,#0ea5e9,#2dd4bf)','linear-gradient(135deg,#f59e0b,#ef4444)'];
+const grad = s => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return GRADS[h % GRADS.length]; };
+const initials = n => String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const avatar = n => `<span class="av" style="background:${grad(n)}">${esc(initials(n))}</span>`;
+
+function countUp(el, to) {
+  const t0 = performance.now(), dur = 900;
+  const step = t => { const p = Math.min((t - t0) / dur, 1); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function confetti() {
+  const c = document.createElement('canvas');
+  c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:200';
+  c.width = innerWidth; c.height = innerHeight; document.body.appendChild(c);
+  const x = c.getContext('2d'), cols = ['#f5b324','#10b981','#38b6ff','#ec4899','#8b5cf6','#ff5e62'];
+  const ps = Array.from({ length: 150 }, () => ({ x: Math.random() * c.width, y: -20 - Math.random() * c.height * .5, r: 4 + Math.random() * 5,
+    vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 4, col: cols[Math.floor(Math.random() * cols.length)], rot: Math.random() * 6 }));
+  let f = 0;
+  (function draw() {
+    x.clearRect(0, 0, c.width, c.height);
+    ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.rot += .1; x.save(); x.translate(p.x, p.y); x.rotate(p.rot); x.fillStyle = p.col; x.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); x.restore(); });
+    if (++f < 170) requestAnimationFrame(draw); else c.remove();
+  })();
+}
+
+// ---------- login ----------
+function showLogin() { $('#app').classList.add('hide'); $('#login').classList.remove('hide'); closeModal(); }
+async function doLogin() {
+  try {
+    me = await api('/api/login', 'POST', { username: $('#lu').value, password: $('#lp').value });
+    $('#lp').value = ''; $('#lerr').textContent = ''; startApp();
+  } catch (e) { $('#lerr').textContent = e.message; }
+}
+$('#lp').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+$('#lu').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+async function doLogout() { await api('/api/logout', 'POST'); me = null; showLogin(); }
+
+function startApp() {
+  $('#login').classList.add('hide'); $('#app').classList.remove('hide');
+  $('#wname').textContent = me.full_name; $('#wrole').textContent = me.role;
+  const items = [['dash','','Dashboard'], ['guards','','Pengurusan Pengawal'], ['import','','Import / Eksport']];
+  if (me.role === 'ADMIN') items.push(['settings','','Tetapan']);
+  $('#nav').innerHTML = items.map(i => `<a data-v="${i[0]}" onclick="go('${i[0]}')"><span class="ic">${i[1]}</span>${i[2]}</a>`).join('');
+  $('#mobtop').innerHTML = items.map(i => `<a onclick="go('${i[0]}')">${i[1]} ${i[2]}</a>`).join('');
+  go('dash');
+}
+function go(v) {
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
+  ({ dash: viewDash, guards: viewGuards, import: viewImport, settings: viewSettings })[v]().catch(e => toast(e.message));
+}
+
+// ---------- modal ----------
+function openModal(html, small) {
+  $('#modal').innerHTML = `<div class="mbox ${small ? 'small' : ''}">${html}</div>`;
+  $('#modal').classList.remove('hide');
+}
+function closeModal() { $('#modal').classList.add('hide'); $('#modal').innerHTML = ''; }
+$('#modal').addEventListener('mousedown', e => { if (e.target.id === 'modal') closeModal(); });
+
+// ---------- dashboard ----------
+async function viewDash() {
+  const d = await api('/api/dashboard');
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Selamat pagi' : h < 15 ? 'Selamat tengah hari' : h < 19 ? 'Selamat petang' : 'Selamat malam';
+  const k = (cls, ico, n, l, i) => `<div class="kpi ${cls}" style="animation-delay:${i * 70}ms"><div class="ico">${ico}</div><b data-n="${n}">0</b><span>${l}</span></div>`;
+  const C = 2 * Math.PI * 54, tot = d.total || 1;
+  const segs = [[d.aktif, '#10b981'], [d.gantung, '#f6b93b'], [d.berhenti, '#ff5e62']];
+  let off = 0;
+  const circles = segs.map(([n, col]) => { const len = d.total ? (n / tot) * C : 0; const el =
+    `<circle r="54" cx="70" cy="70" fill="none" stroke="${col}" stroke-width="18" stroke-dasharray="0 ${C}" data-len="${len}" data-c="${C}" stroke-dashoffset="${-off}"/>`;
+    off += len; return el; }).join('');
+  const max = Math.max(1, ...d.mengikutSyarikat.map(r => r.total));
+  const barCols = ['#6a5cff','#10b981','#ff5e62','#f6b93b','#a855f7','#0ea5e9','#ec4899','#14b8a6','#f97316'];
+  $('#main').innerHTML = `<div class="page">
+    <div class="top"><div><h2>${greet}, ${esc(me.full_name.split(' ')[0])} </h2><p class="hello">Ini ringkasan terkini pasukan pengawal anda.</p></div></div>
+    <div class="kpis">${k('g1','👥',d.total,'Jumlah Pengawal',0)}${k('g2','✅',d.aktif,'Aktif',1)}${k('g3','🚪',d.berhenti,'Berhenti',2)}
+      ${k('g4','⏸️',d.gantung,'Gantung',3)}${k('g5','🏢',d.syarikat,'Syarikat',4)}${k('g6','📍',d.tanpaPenempatan,'Aktif Tanpa Penempatan',5)}</div>
+    <div class="two">
+      <div class="card"><h3>Status Pengawal</h3><div class="donutwrap">
+        <svg class="donut" width="160" height="160" viewBox="0 0 140 140"><circle r="54" cx="70" cy="70" fill="none" stroke="#edf0f6" stroke-width="18"/>
+          <g transform="rotate(-90 70 70)">${circles}</g>
+          <text x="70" y="68" text-anchor="middle" font-size="26" font-weight="800" fill="#0b1f3a">${d.total}</text>
+          <text x="70" y="86" text-anchor="middle" font-size="11" fill="#6b7785">pengawal</text></svg>
+        <div class="legend"><div><i style="background:#10b981"></i>Aktif (${d.aktif})</div><div><i style="background:#f6b93b"></i>Gantung (${d.gantung})</div>
+          <div><i style="background:#ff5e62"></i>Berhenti (${d.berhenti})</div></div></div></div>
+      <div class="card"><h3>Mengikut Syarikat</h3>
+        ${d.mengikutSyarikat.map((r, i) => `<div class="brow"><div class="bl"><span>${esc(r.name)}</span><b>${r.total}</b></div>
+          <div class="track"><div class="fill" data-w="${r.total / max * 100}" style="background:${barCols[i % barCols.length]}"></div></div></div>`).join('')}</div>
+    </div>
+    <div class="card"><h3>Mengikut POS (penempatan aktif)</h3><table>
+      <thead><tr><th>Syarikat</th><th>POS</th><th>Pengawal</th></tr></thead>
+      <tbody>${d.mengikutPOS.map((r, i) => `<tr style="--i:${i}"><td>${esc(r.company)}</td><td>${esc(r.pos)}</td><td><b>${r.total}</b></td></tr>`).join('') || '<tr><td colspan="3">Belum ada POS</td></tr>'}</tbody></table></div></div>`;
+  document.querySelectorAll('.kpi b').forEach(el => countUp(el, Number(el.dataset.n)));
+  setTimeout(() => {
+    document.querySelectorAll('.fill').forEach(f => f.style.width = f.dataset.w + '%');
+    document.querySelectorAll('.donut circle[data-len]').forEach(c => c.setAttribute('stroke-dasharray', `${c.dataset.len} ${c.dataset.c}`));
+  }, 80);
+}
+
+// ---------- guards list ----------
+async function viewGuards() {
+  const comps = await api('/api/companies');
+  $('#main').innerHTML = `<div class="page"><div class="top"><h2>Pengurusan Pengawal</h2>
+      <div><button class="btn green" onclick="exportGuards()">⬇ Eksport Excel</button>
+      <button class="btn" onclick="guardForm()">+ Pengawal Baru</button></div></div>
+    <div class="bar"><input id="q" placeholder="🔍 Cari nama atau No KP" oninput="loadGuards()">
+      <select id="fc" onchange="loadGuards()"><option value="">Semua Syarikat</option>
+        ${comps.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
+      <select id="fs" onchange="loadGuards()"><option value="">Semua Status</option>
+        <option>AKTIF</option><option>BERHENTI</option><option>GANTUNG</option></select></div>
+    <div class="card"><table><thead><tr><th>Nama</th><th>No KP</th><th>Syarikat</th><th>Penempatan</th><th>Syif</th><th>Status</th></tr></thead>
+    <tbody id="gb"></tbody></table></div></div>`;
+  loadGuards();
+}
+function exportGuards() {
+  const p = new URLSearchParams({ company_id: $('#fc').value, status: $('#fs').value });
+  location.href = '/api/export/guards?' + p;
+}
+let gTimer;
+function loadGuards() {
+  clearTimeout(gTimer);
+  gTimer = setTimeout(async () => {
+    const p = new URLSearchParams({ q: $('#q').value, company_id: $('#fc').value, status: $('#fs').value });
+    const rows = await api('/api/guards?' + p);
+    $('#gb').innerHTML = rows.map((g, i) => `<tr class="click" style="--i:${Math.min(i, 20)}" onclick="showGuard(${g.id})">
+      <td><div class="who2">${avatar(g.nama)}<div><b>${esc(g.nama)}</b><div class="sub">${esc(g.jawatan || '')}</div></div></div></td>
+      <td>${esc(g.no_kp)}</td><td>${esc(g.company_name)}</td>
+      <td>${g.pos_name ? esc(g.pos_name) + (g.sub_name ? '<div class="sub">' + esc(g.sub_name) + '</div>' : '') : '<span class="sub">Tiada</span>'}</td>
+      <td>${esc(g.kategori_syif || '')}</td><td>${tag(g.status_pengawal)}</td></tr>`).join('')
+      || '<tr><td colspan="6">Tiada rekod</td></tr>';
+  }, 200);
+}
+
+// ---------- guard form ----------
+async function guardForm(id) {
+  let g = {}, comps = await api('/api/companies');
+  if (id) g = (await api('/api/guards/' + id)).guard;
+  const f = (k, l, type = 'text') => `<div><label>${l}</label><input id="f_${k}" type="${type}" value="${esc(g[k] || '')}"></div>`;
+  openModal(`<div class="mhead"><h3 style="margin:0;color:var(--navy)">${id ? '✏️ Kemaskini' : '➕ Pengawal Baru'}</h3>
+    <button class="btn sec sm" onclick="closeModal()">Tutup</button></div>
+    <div class="grid">
+      <div><label>Syarikat</label><select id="f_company_id" ${id ? 'disabled' : ''}>
+        ${comps.map(c => `<option value="${c.id}" ${c.id === g.company_id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div>
+      ${f('nama','Nama')}${f('no_kp','No KP (12 digit)')}${f('jawatan','Jawatan')}
+      ${f('tarikh_masuk','Tarikh Masuk','date')}${f('tarikh_lahir','Tarikh Lahir','date')}
+      ${f('no_telefon','No Telefon')}
+      ${id ? `<div><label>Status Pengawal</label><select id="f_status_pengawal">
+        ${['AKTIF','BERHENTI','GANTUNG'].map(s => `<option ${s === g.status_pengawal ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
+        ${f('tarikh_berhenti','Tarikh Berhenti','date')}` : ''}
+    </div>
+    <label>Alamat</label><textarea id="f_alamat" rows="2">${esc(g.alamat || '')}</textarea>
+    <label>Catatan</label><textarea id="f_catatan" rows="2">${esc(g.catatan || '')}</textarea>
+    <div class="err" id="ferr"></div>
+    <button class="btn" onclick="saveGuard(${id || 0})">Simpan</button>`);
+}
+async function saveGuard(id) {
+  const keys = ['nama','no_kp','jawatan','tarikh_masuk','tarikh_lahir','no_telefon','alamat','catatan','tarikh_berhenti','status_pengawal'];
+  const b = {}; const isNew = !id;
+  keys.forEach(k => { const el = $('#f_' + k); if (el) b[k] = el.value; });
+  try {
+    if (id) await api('/api/guards/' + id, 'PUT', b);
+    else { b.company_id = $('#f_company_id').value; id = (await api('/api/guards', 'POST', b)).id; }
+    toast('Disimpan ✔'); if (isNew) confetti();
+    closeModal(); showGuard(id); if ($('#gb')) loadGuards();
+  } catch (e) { $('#ferr').textContent = e.message; }
+}
+
+// ---------- guard profile ----------
+async function showGuard(id) {
+  const { guard: g, history } = await api('/api/guards/' + id);
+  const cur = history.find(h => h.status_penempatan === 'AKTIF');
+  const row = (l, v) => `<div><label>${l}</label><div>${esc(v || '-')}</div></div>`;
+  openModal(`<div class="mhead"><span></span><button class="btn sec sm" onclick="closeModal()">Tutup</button></div>
+    <div class="banner" style="background:${grad(g.nama)}">${avatar(g.nama)}<div><h3>${esc(g.nama)}</h3><div>${esc(g.company_name)}</div>${tag(g.status_pengawal)}</div></div>
+    <div class="grid">${row('No KP', g.no_kp)}${row('Jawatan', g.jawatan)}${row('Umur', g.umur)}${row('Tarikh Masuk', g.tarikh_masuk)}
+      ${row('Tarikh Berhenti', g.tarikh_berhenti)}${row('No Telefon', g.no_telefon)}${row('Tarikh Lahir', g.tarikh_lahir)}</div>
+    ${row('Alamat', g.alamat)}${row('Catatan', g.catatan)}
+    <div style="margin:14px 0"><button class="btn purple sm" onclick="guardForm(${g.id})">✏️ Kemaskini Maklumat</button></div>
+    <h4 style="color:var(--navy);margin-bottom:6px">📍 Penempatan Semasa</h4>
+    <div class="card" style="box-shadow:none;border:2px solid #eef1f6">
+      ${cur ? `<b>${esc(cur.pos_name)}</b>${cur.sub_name ? ' / ' + esc(cur.sub_name) : ''} · ${esc(cur.kategori_syif)}
+        <div class="sub">Mula: ${esc(cur.tarikh_mula)}</div>` : '<span class="sub">Tiada penempatan aktif</span>'}
+      <div style="margin-top:10px" class="${g.status_pengawal === 'BERHENTI' ? 'hide' : ''}">
+        <button class="btn sm" onclick="placeForm(${g.id}, ${g.company_id})">${cur ? '🔄 Pindah' : '📍 Tempatkan'}</button>
+        ${cur ? `<button class="btn red sm" onclick="endPlacement(${g.id})">Tamat Penempatan</button>` : ''}</div></div>
+    <h4 style="color:var(--navy);margin-bottom:6px">🕘 Sejarah Penempatan</h4>
+    <div style="overflow-x:auto"><table><thead><tr><th>POS</th><th>Sub</th><th>Syif</th><th>Mula</th><th>Akhir</th><th>Status</th><th>Pergerakan</th></tr></thead>
+    <tbody>${history.map((h, i) => `<tr style="--i:${i}"><td>${esc(h.pos_name)}</td><td>${esc(h.sub_name || '-')}</td><td>${esc(h.kategori_syif)}</td>
+      <td>${esc(h.tarikh_mula)}</td><td>${esc(h.tarikh_akhir || '-')}</td><td>${tag(h.status_penempatan)}</td>
+      <td>${esc(h.jenis_pergerakan || '-')}</td></tr>`).join('') || '<tr><td colspan="7">Tiada sejarah</td></tr>'}</tbody></table></div>`);
+}
+
+// ---------- placement ----------
+async function placeForm(gid, cid) {
+  const pos = await api('/api/pos?company_id=' + cid);
+  if (!pos.length) return toast('Tiada POS aktif untuk syarikat ini. ADMIN perlu tambah POS dahulu.');
+  openModal(`<div class="mhead"><h3 style="margin:0;color:var(--navy)">📍 Penempatan</h3>
+      <button class="btn sec sm" onclick="showGuard(${gid})">Kembali</button></div>
+    <label>POS</label><select id="p_pos" onchange="loadSubs()">
+      <option value="">Pilih POS</option>${pos.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select>
+    <div id="p_subbox" class="hide"><label>Sub Lokasi</label><select id="p_sub"></select></div>
+    <label>Kategori Syif</label><select id="p_syif"><option>SYIF PAGI</option><option>SYIF MALAM</option></select>
+    <label>Tarikh Mula</label><input id="p_date" type="date" value="${new Date().toISOString().slice(0,10)}">
+    <label>Catatan</label><input id="p_note">
+    <div class="err" id="perr"></div>
+    <button class="btn" onclick="savePlace(${gid})">Simpan</button>`, true);
+}
+async function loadSubs() {
+  const id = $('#p_pos').value; const box = $('#p_subbox');
+  if (!id) return box.classList.add('hide');
+  const subs = await api('/api/subs?pos_id=' + id);
+  if (!subs.length) { box.classList.add('hide'); $('#p_sub').innerHTML = ''; return; }
+  $('#p_sub').innerHTML = '<option value="">Pilih sub lokasi</option>' + subs.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  box.classList.remove('hide');
+}
+async function savePlace(gid) {
+  try {
+    await api(`/api/guards/${gid}/place`, 'POST', { pos_id: $('#p_pos').value, sub_id: $('#p_sub').value,
+      kategori_syif: $('#p_syif').value, tarikh: $('#p_date').value, catatan: $('#p_note').value });
+    toast('Penempatan disimpan ✔'); showGuard(gid); if ($('#gb')) loadGuards();
+  } catch (e) { $('#perr').textContent = e.message; }
+}
+async function endPlacement(gid) {
+  if (!confirm('Tamatkan penempatan semasa pengawal ini?')) return;
+  try { await api(`/api/guards/${gid}/end-placement`, 'POST', {}); toast('Penempatan ditamatkan'); showGuard(gid); if ($('#gb')) loadGuards(); }
+  catch (e) { toast(e.message); }
+}
+
+// ---------- import / export ----------
+let imp = {};
+const norm = s => String(s || '').toUpperCase().replace(/[^A-Z]/g, '');
+const ALIAS = { nama: ['NAMA','NAME','NAMAPENUH'], no_kp: ['NOKP','KP','IC','NOIC','NOKADPENGENALAN','NOKPBARU','ICNO'],
+  jawatan: ['JAWATAN','POSITION','POSISI'], tarikh_masuk: ['TARIKHMASUK','TARIKHMULA','JOINDATE','DATEJOINED'],
+  tarikh_lahir: ['TARIKHLAHIR','DOB','DATEOFBIRTH'], no_telefon: ['NOTELEFON','TELEFON','NOTEL','PHONE','NOTELEFONBIMBIT','HP'],
+  alamat: ['ALAMAT','ADDRESS'], catatan: ['CATATAN','NOTES','REMARK','REMARKS'] };
+
+async function viewImport() {
+  const comps = await api('/api/companies');
+  imp = { fields: await api('/api/import/fields'), comps };
+  $('#main').innerHTML = `<div class="page"><div class="top"><h2>Import / Eksport</h2></div>
+    <div class="card"><h3>⬇ Eksport ke Excel</h3><div class="exgrid">
+      <div class="excard g2"><b>Senarai Pengawal</b><p>Semua pengawal dengan penempatan semasa.</p>
+        <button class="btn sec sm" onclick="location.href='/api/export/guards'">Muat turun</button></div>
+      <div class="excard g5"><b>Sejarah Penempatan</b><p>Semua pindah dan tamat penempatan.</p>
+        <button class="btn sec sm" onclick="location.href='/api/export/history'">Muat turun</button></div>
+      <div class="excard g1"><b>Templat Import</b><p>Fail kosong dengan lajur yang betul.</p>
+        <button class="btn sec sm" onclick="location.href='/api/export/template'">Muat turun</button></div></div></div>
+    <div class="card"><h3>⬆ Import dari Excel</h3><div class="steps" id="imp_steps"></div><div id="imp_body"></div></div></div>`;
+  importStep1();
+}
+function setSteps(n) {
+  const names = ['Muat naik', 'Padankan lajur', 'Semak', 'Selesai'];
+  $('#imp_steps').innerHTML = names.map((s, i) => `<span class="step ${i + 1 === n ? 'on' : i + 1 < n ? 'done' : ''}">${i + 1 < n ? '✔' : i + 1}. ${s}</span>`).join('');
+}
+function importStep1() {
+  setSteps(1);
+  $('#imp_body').innerHTML = `<label>Syarikat untuk rekod yang diimport</label>
+    <select id="imp_c">${imp.comps.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
+    <div class="drop" id="drop"><div class="dropicon">📄</div><b>Seret fail Excel ke sini</b>
+      <div class="sub">atau klik untuk pilih fail (.xlsx)</div><input type="file" id="imp_f" accept=".xlsx" class="hide"></div>
+    <div class="err" id="imp_err"></div>
+    <a class="linkbtn" href="/api/export/template">⬇ Muat turun templat Excel</a>`;
+  const drop = $('#drop'), inp = $('#imp_f');
+  drop.onclick = () => inp.click();
+  inp.onchange = () => handleFile(inp.files[0]);
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); handleFile(e.dataTransfer.files[0]); };
+}
+function handleFile(file) {
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.xlsx')) { $('#imp_err').textContent = 'Sila pilih fail .xlsx'; return; }
+  imp.company = $('#imp_c').value;
+  const rd = new FileReader();
+  rd.onload = async () => {
+    try {
+      $('#imp_err').textContent = 'Membaca fail...';
+      const d = await api('/api/import/parse', 'POST', { data: rd.result.split(',')[1] });
+      imp.headers = d.headers; imp.rows = d.rows; imp.map = {};
+      imp.fields.forEach(f => {
+        const i = imp.headers.findIndex(h => ALIAS[f.key].includes(norm(h)));
+        imp.map[f.key] = i >= 0 ? String(i) : '';
+      });
+      importStep2();
+    } catch (e) { $('#imp_err').textContent = e.message; }
+  };
+  rd.readAsDataURL(file);
+}
+function importStep2() {
+  setSteps(2);
+  $('#imp_body').innerHTML = `<p><b>${imp.rows.length}</b> baris dijumpai. Pilih lajur Excel untuk setiap medan (sudah dipadankan secara automatik jika boleh).</p>
+    <table><thead><tr><th>Medan HRMS</th><th>Lajur dalam Excel</th></tr></thead><tbody>
+    ${imp.fields.map(f => `<tr><td><b>${f.label}</b>${f.required ? ' <span style="color:#ff5e62">*</span>' : ''}</td>
+      <td><select id="m_${f.key}"><option value="">(Tiada)</option>
+        ${imp.headers.map((h, i) => `<option value="${i}" ${imp.map[f.key] === String(i) ? 'selected' : ''}>${esc(h || 'Lajur ' + (i + 1))}</option>`).join('')}</select></td></tr>`).join('')}
+    </tbody></table><div class="err" id="imp_err"></div>
+    <button class="btn sec" onclick="importStep1()">Kembali</button> <button class="btn purple" onclick="importStep3()">Semak Data</button>`;
+}
+async function importStep3() {
+  imp.fields.forEach(f => imp.map[f.key] = $('#m_' + f.key).value);
+  const miss = imp.fields.filter(f => f.required && imp.map[f.key] === '');
+  if (miss.length) { $('#imp_err').textContent = 'Sila padankan: ' + miss.map(f => f.label).join(', '); return; }
+  imp.records = imp.rows.map(r => { const o = {}; imp.fields.forEach(f => { const i = imp.map[f.key]; o[f.key] = i === '' ? '' : (r[Number(i)] || ''); }); return o; });
+  try {
+    imp.checked = await api('/api/import/check', 'POST', { records: imp.records });
+    setSteps(3);
+    const ok = imp.checked.filter(r => r.status === 'OK').length, dup = imp.checked.filter(r => r.status === 'DUPLIKAT').length,
+      bad = imp.checked.filter(r => r.status === 'RALAT').length;
+    $('#imp_body').innerHTML = `<div class="sumrow"><div class="sum OK"><b>${ok}</b>Sedia diimport</div>
+      <div class="sum DUPLIKAT"><b>${dup}</b>Duplikat (dilangkau)</div><div class="sum RALAT"><b>${bad}</b>Ralat (dilangkau)</div></div>
+      <p class="sub">Pengawal sedia ada tidak akan ditimpa. Hanya baris berstatus OK akan disimpan. Paparan menunjukkan 200 baris pertama.</p>
+      <div style="overflow-x:auto;max-height:340px;overflow-y:auto"><table><thead><tr><th>Baris</th><th>Nama</th><th>No KP</th><th>Status</th><th>Nota</th></tr></thead><tbody>
+      ${imp.checked.slice(0, 200).map(r => `<tr><td>${r.row}</td><td>${esc(r.nama)}</td><td>${esc(r.no_kp)}</td><td>${tag(r.status)}</td><td>${esc(r.msg)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="err" id="imp_err"></div>
+      <button class="btn sec" onclick="importStep2()">Kembali</button> <button class="btn green" ${ok ? '' : 'disabled'} onclick="importStep4()">Import ${ok} rekod</button>`;
+  } catch (e) { $('#imp_err').textContent = e.message; }
+}
+async function importStep4() {
+  try {
+    const r = await api('/api/import/commit', 'POST', { company_id: imp.company, records: imp.records });
+    setSteps(5);
+    $('#imp_body').innerHTML = `<div style="text-align:center;padding:20px"><div style="font-size:60px">🎉</div>
+      <h3 style="color:var(--navy)">Import siap!</h3>
+      <div class="sumrow"><div class="sum OK"><b>${r.added}</b>Berjaya ditambah</div><div class="sum DUPLIKAT"><b>${r.duplicates}</b>Duplikat dilangkau</div>
+      <div class="sum RALAT"><b>${r.errors}</b>Ralat dilangkau</div></div>
+      <button class="btn" onclick="importStep1()">Import lagi</button> <button class="btn purple" onclick="go('guards')">Lihat senarai pengawal</button></div>`;
+    if (r.added) confetti();
+  } catch (e) { toast(e.message); }
+}
+
+// ---------- settings (ADMIN) ----------
+async function viewSettings() {
+  const [comps, pos, users] = await Promise.all([api('/api/companies'), api('/api/pos?all=1'), api('/api/users')]);
+  let subRows = '';
+  for (const p of pos) {
+    const subs = await api(`/api/subs?pos_id=${p.id}&all=1`);
+    subRows += `<tr><td>${esc(p.company_name)}</td><td><b>${esc(p.name)}</b></td>
+      <td>${subs.map(s => `${esc(s.name)} <a style="cursor:pointer;color:${s.active ? '#0d7a4f' : '#b3261e'}" onclick="toggleSub(${s.id},${s.active ? 0 : 1})">[${s.active ? 'aktif' : 'tidak aktif'}]</a>`).join('<br>') || '<span class="sub">Tiada</span>'}</td>
+      <td>${tag(p.active ? 'AKTIF' : 'TAMAT')} <button class="btn sec sm" onclick="togglePos(${p.id},${p.active ? 0 : 1})">${p.active ? 'Nyahaktif' : 'Aktifkan'}</button>
+      <button class="btn sec sm" onclick="addSub(${p.id})">+ Sub</button></td></tr>`;
+  }
+  $('#main').innerHTML = `<div class="page"><div class="top"><h2>Tetapan</h2></div>
+    <div class="card"><h3>📍 POS dan Sub Lokasi</h3>
+      <div class="bar"><select id="np_c">${comps.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
+        <input id="np_n" placeholder="Nama POS baru"><button class="btn" onclick="addPos()">Tambah POS</button></div>
+      <table><thead><tr><th>Syarikat</th><th>POS</th><th>Sub Lokasi</th><th>Tindakan</th></tr></thead><tbody>${subRows || '<tr><td colspan="4">Belum ada POS</td></tr>'}</tbody></table></div>
+    <div class="card"><h3>👤 Pengguna HR</h3>
+      <div class="bar"><input id="nu_u" placeholder="Nama pengguna"><input id="nu_f" placeholder="Nama penuh">
+        <input id="nu_p" type="password" placeholder="Kata laluan (min 6)">
+        <select id="nu_r"><option>HR</option><option>ADMIN</option></select>
+        <button class="btn" onclick="addUser()">Tambah</button></div>
+      <table><thead><tr><th>Pengguna</th><th>Nama</th><th>Peranan</th><th>Status</th><th></th></tr></thead><tbody>
+      ${users.map(u => `<tr><td>${esc(u.username)}</td><td>${esc(u.full_name)}</td><td>${u.role}</td><td>${tag(u.active ? 'AKTIF' : 'BERHENTI')}</td>
+        <td><button class="btn sec sm" onclick="toggleUser(${u.id},${u.active ? 0 : 1})">${u.active ? 'Nyahaktif' : 'Aktifkan'}</button>
+        <button class="btn sec sm" onclick="resetPw(${u.id})">Tukar Kata Laluan</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+const act = async (fn, msg) => { try { await fn(); toast(msg); viewSettings(); } catch (e) { toast(e.message); } };
+const addPos = () => act(() => api('/api/pos', 'POST', { company_id: $('#np_c').value, name: $('#np_n').value }), 'POS ditambah');
+const togglePos = (id, a) => act(() => api('/api/pos/' + id, 'PUT', { active: a }), 'Dikemaskini');
+const toggleSub = (id, a) => act(() => api('/api/subs/' + id, 'PUT', { active: a }), 'Dikemaskini');
+const addSub = id => { const n = prompt('Nama sub lokasi:'); if (n) act(() => api('/api/subs', 'POST', { pos_id: id, name: n }), 'Sub lokasi ditambah'); };
+const addUser = () => act(() => api('/api/users', 'POST', { username: $('#nu_u').value, full_name: $('#nu_f').value, password: $('#nu_p').value, role: $('#nu_r').value }), 'Pengguna ditambah');
+const toggleUser = (id, a) => act(() => api('/api/users/' + id, 'PUT', { active: a }), 'Dikemaskini');
+const resetPw = id => { const p = prompt('Kata laluan baru (min 6 aksara):'); if (p) act(() => api('/api/users/' + id, 'PUT', { password: p }), 'Kata laluan ditukar'); };
+
+// auto login check on page load
+api('/api/me').then(u => { me = u; startApp(); }).catch(() => showLogin());
+</script>
+</body>
+</html>
